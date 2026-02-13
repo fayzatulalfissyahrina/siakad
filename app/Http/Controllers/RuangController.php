@@ -22,14 +22,19 @@ class RuangController extends Controller
 
         $data = [
             'ruang' => $query->orderBy('id_ruang')->paginate(10)->withQueryString(),
-            'editing' => null,
         ];
 
-        if ($request->filled('edit')) {
-            $data['editing'] = Ruang::where('id_ruang', $request->edit)->firstOrFail();
-        }
-
         return view('pages.ruang.index', $data);
+    }
+
+    public function create()
+    {
+        return view('pages.ruang.create');
+    }
+
+    public function edit(Ruang $ruang)
+    {
+        return view('pages.ruang.edit', ['ruang' => $ruang]);
     }
 
     public function store(Request $request)

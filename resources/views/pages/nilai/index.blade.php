@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Input Nilai')
+@section('title', 'Nilai')
 
 @section('content')
 @if(session('success'))
@@ -11,7 +11,13 @@
 @endif
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">Input Nilai</h4>
+    <h4 class="mb-0">
+        @if($role === 'admin')
+            Lihat Nilai
+        @else
+            Input Nilai
+        @endif
+    </h4>
 </div>
 
 <div class="card">
@@ -45,35 +51,52 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Mahasiswa</th>
+                        <th>NIM</th>
+                        <th>Nama Mahasiswa</th>
                         <th>Mata Kuliah</th>
                         <th>Nilai Angka</th>
-                        <th>Nilai Akhir</th>
+                        <th>Nilai Huruf</th>
                         <th>Status</th>
+                        @if($role !== 'admin')
                         <th>Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($krsList as $item)
                         <tr>
-                            <td>{{ $item->mahasiswa->nim ?? $item->nim }} - {{ $item->mahasiswa->nama ?? '-' }}</td>
+                            <td>{{ $item->nim }}</td>
+                            <td>{{ $item->mahasiswa->nama ?? '-' }}</td>
                             <td>{{ $item->mataKuliah->nama_mk ?? $item->kode_mk }}</td>
-                            <td style="min-width: 170px;">
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    max="100"
-                                    class="form-control form-control-sm"
-                                    name="nilai_angka"
-                                    form="nilai-form-{{ $item->id }}"
-                                    value="{{ old('nilai_angka', $item->nilai_angka) }}"
-                                    placeholder="0 - 100"
-                                    required
-                                >
+                            <td>
+                                @if($role === 'admin')
+                                    {{ $item->nilai_angka ?? '-' }}
+                                @else
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        max="100"
+                                        class="form-control form-control-sm"
+                                        name="nilai_angka"
+                                        form="nilai-form-{{ $item->id }}"
+                                        value="{{ old('nilai_angka', $item->nilai_angka) }}"
+                                        placeholder="0 - 100"
+                                        required
+                                    >
+                                @endif
                             </td>
                             <td>{{ $item->nilai_akhir ?? '-' }}</td>
-                            <td>{{ $item->status_lulus ?? '-' }}</td>
+                            <td>
+                                @if($item->status_lulus === 'Lulus')
+                                    <span class="badge bg-success">Lulus</span>
+                                @elseif($item->status_lulus === 'Tidak Lulus')
+                                    <span class="badge bg-danger">Tidak Lulus</span>
+                                @else
+                                    <span class="badge bg-secondary">Belum Ada</span>
+                                @endif
+                            </td>
+                            @if($role !== 'admin')
                             <td>
                                 <form id="nilai-form-{{ $item->id }}" method="POST" action="{{ route($storeRoute) }}">
                                     @csrf
@@ -84,10 +107,11 @@
                                     <button class="btn btn-sm btn-primary">Simpan</button>
                                 </form>
                             </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center text-muted">Belum ada data mahasiswa pada mata kuliah ini.</td>
+                            <td colspan="{{ $role === 'admin' ? 6 : 7 }}" class="text-center text-muted">Belum ada data mahasiswa pada mata kuliah ini.</td>
                         </tr>
                     @endforelse
                 </tbody>

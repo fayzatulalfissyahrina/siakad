@@ -23,8 +23,35 @@ class AcademicHelper
         $sem = Str::lower($semesterAkademik);
         $isGenap = str_contains($sem, 'genap');
 
-        $semester = ($startYear - $angkatanYear) * 2 + ($isGenap ? 2 : 1);
+        $yearDiff = $startYear - $angkatanYear;
+        
+        if ($yearDiff < 0) {
+            return null;
+        }
+
+        $semester = ($yearDiff * 2) + ($isGenap ? 2 : 1);
 
         return $semester > 0 ? $semester : null;
+    }
+
+    public static function hitungSemesterKelas(string $angkatan, string $tahunAkademik, string $semesterAkademik): int
+    {
+        $parts = explode('/', $tahunAkademik);
+        $startYear = (int) trim($parts[0] ?? '');
+        $angkatanYear = (int) preg_replace('/\D/', '', $angkatan);
+
+        if ($startYear <= 0 || $angkatanYear <= 0) {
+            return 1;
+        }
+
+        $isGenap = strtolower($semesterAkademik) === 'genap';
+        
+        $tahunSelisih = $startYear - $angkatanYear;
+        
+        if ($tahunSelisih === 0) {
+            return $isGenap ? 2 : 1;
+        }
+        
+        return ($tahunSelisih * 2) + ($isGenap ? 2 : 1);
     }
 }

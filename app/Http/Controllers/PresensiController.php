@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dosen;
 use App\Models\Golongan;
 use App\Models\JadwalAkademik;
 use App\Models\Krs;
@@ -30,22 +31,6 @@ class PresensiController extends Controller
         if ($role === 'admin') {
             $query = PresensiAkademik::query()->with(['mahasiswa', 'mataKuliah']);
 
-            if ($request->filled('q')) {
-                $q = $request->string('q');
-                $query->whereHas('mahasiswa', function ($sub) use ($q) {
-                    $sub->where('nim', 'like', "%{$q}%")
-                        ->orWhere('nama', 'like', "%{$q}%");
-                });
-            }
-
-            if ($request->filled('tanggal')) {
-                $query->whereDate('tanggal', $request->tanggal);
-            }
-
-            if ($request->filled('status') && $request->status !== 'all') {
-                $query->where('status_kehadiran', $request->status);
-            }
-
             $data['presensi'] = $query->orderByDesc('tanggal')->orderByDesc('id')->paginate(10)->withQueryString();
             $data['mahasiswaList'] = Mahasiswa::orderBy('nim')->get();
             $data['mataKuliahList'] = MataKuliah::orderBy('kode_mk')->get();
@@ -55,7 +40,9 @@ class PresensiController extends Controller
             }
         } elseif ($role === 'dosen') {
             $nip = Auth::user()->nip;
-            $pengampu = Pengampu::with('mataKuliah')
+            $nip = Auth::user()->nip;
+            
+            $pengampu = Pengampu::with(['mataKuliah', 'dosen'])
                 ->where('nip', $nip)
                 ->orderBy('kode_mk')
                 ->get();
@@ -233,12 +220,13 @@ class PresensiController extends Controller
             ->with('success', 'Sesi presensi berhasil dibuka.');
     }
 
-    public function clickHadir(Request $request)
+    public function submitStatus(Request $request)
     {
         $nim = Auth::user()->nim;
 
         $validated = $request->validate([
             'session_id' => 'required|exists:qr_presensi,id',
+            'status_kehadiran' => 'required|in:hadir,sakit,izin',
         ]);
 
         $session = QrPresensi::with(['mataKuliah', 'golongan'])
@@ -286,7 +274,7 @@ class PresensiController extends Controller
             ],
             [
                 'hari' => $this->mapHari($session->tanggal),
-                'status_kehadiran' => 'hadir',
+                'status_kehadiran' => $validated['status_kehadiran'],
                 'jam_masuk' => Carbon::now()->format('H:i'),
                 'jam_keluar' => null,
                 'keterangan' => $this->sessionTag($session->id),
@@ -294,7 +282,13 @@ class PresensiController extends Controller
             ]
         );
 
-        return redirect()->route('mahasiswa.presensi')->with('success', 'Presensi berhasil tercatat.');
+        $statusLabels = ['hadir' => 'Hadir', 'sakit' => 'Sakit', 'izin' => 'Izin'];
+        return redirect()->route('mahasiswa.presensi')->with('success', 'Presensi (' . $statusLabels[$validated['status_kehadiran']] . ') berhasil tercatat.');
+    }
+
+    public function clickHadir(Request $request)
+    {
+        return $this->submitStatus($request);
     }
 
     public function closeSession(QrPresensi $session)

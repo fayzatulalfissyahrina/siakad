@@ -13,28 +13,21 @@ class DosenController extends Controller
     {
         $query = Dosen::query();
 
-        if ($request->filled('q')) {
-            $q = $request->string('q');
-            $query->where(function ($sub) use ($q) {
-                $sub->where('nip', 'like', "%{$q}%")
-                    ->orWhere('nama', 'like', "%{$q}%");
-            });
-        }
-
-        if ($request->filled('status') && $request->status !== 'all') {
-            $query->where('status', $request->status);
-        }
-
         $data = [
             'dosen' => $query->orderBy('nip')->paginate(10)->withQueryString(),
-            'editing' => null,
         ];
 
-        if ($request->filled('edit')) {
-            $data['editing'] = Dosen::where('nip', $request->edit)->firstOrFail();
-        }
-
         return view('pages.dosen.index', $data);
+    }
+
+    public function create()
+    {
+        return view('pages.dosen.create');
+    }
+
+    public function edit(Dosen $dosen)
+    {
+        return view('pages.dosen.edit', ['dosen' => $dosen]);
     }
 
     public function store(Request $request)

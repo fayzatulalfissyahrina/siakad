@@ -11,24 +11,21 @@ class MataKuliahController extends Controller
     {
         $query = MataKuliah::query();
 
-        if ($request->filled('q')) {
-            $q = $request->string('q');
-            $query->where(function ($sub) use ($q) {
-                $sub->where('kode_mk', 'like', "%{$q}%")
-                    ->orWhere('nama_mk', 'like', "%{$q}%");
-            });
-        }
-
         $data = [
             'mataKuliah' => $query->orderBy('kode_mk')->paginate(10)->withQueryString(),
-            'editing' => null,
         ];
 
-        if ($request->filled('edit')) {
-            $data['editing'] = MataKuliah::where('kode_mk', $request->edit)->firstOrFail();
-        }
-
         return view('pages.mata-kuliah.index', $data);
+    }
+
+    public function create()
+    {
+        return view('pages.mata-kuliah.create');
+    }
+
+    public function edit(MataKuliah $mata_kuliah)
+    {
+        return view('pages.mata-kuliah.edit', ['mataKuliah' => $mata_kuliah]);
     }
 
     public function store(Request $request)

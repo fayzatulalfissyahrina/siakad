@@ -29,14 +29,24 @@ class MahasiswaController extends Controller
         $data = [
             'mahasiswa' => $query->orderBy('nim')->paginate(10)->withQueryString(),
             'golonganList' => Golongan::orderBy('nama_gol')->get(),
-            'editing' => null,
         ];
 
-        if ($request->filled('edit')) {
-            $data['editing'] = Mahasiswa::where('nim', $request->edit)->firstOrFail();
-        }
-
         return view('pages.mahasiswa.index', $data);
+    }
+
+    public function create()
+    {
+        return view('pages.mahasiswa.create', [
+            'golonganList' => Golongan::orderBy('nama_gol')->get(),
+        ]);
+    }
+
+    public function edit(Mahasiswa $mahasiswa)
+    {
+        return view('pages.mahasiswa.edit', [
+            'mahasiswa' => $mahasiswa,
+            'golonganList' => Golongan::orderBy('nama_gol')->get(),
+        ]);
     }
 
     public function store(Request $request)

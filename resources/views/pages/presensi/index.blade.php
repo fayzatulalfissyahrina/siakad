@@ -15,98 +15,8 @@
 </div>
 
 @if(($role ?? 'admin') === 'admin')
-    <div class="card mb-3">
-        <div class="card-body">
-            <h6 class="mb-3">{{ $editing ? 'Edit Presensi' : 'Tambah Presensi' }}</h6>
-            <form method="POST" action="{{ $editing ? route('presensi.update', $editing->id) : route('presensi.store') }}">
-                @csrf
-                @if($editing) @method('PUT') @endif
-                <div class="row g-2">
-                    <div class="col-md-3">
-                        <label class="form-label">Tanggal</label>
-                        <input type="date" class="form-control" name="tanggal" value="{{ old('tanggal', ($editing && $editing->tanggal) ? \Illuminate\Support\Carbon::parse($editing->tanggal)->format('Y-m-d') : date('Y-m-d')) }}">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Hari</label>
-                        <input class="form-control" name="hari" value="{{ old('hari', $editing->hari ?? 'Senin') }}">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Mahasiswa</label>
-                        <select class="form-select" name="nim">
-                            @foreach($mahasiswaList as $mhs)
-                                <option value="{{ $mhs->nim }}" @selected(old('nim', $editing->nim ?? '') == $mhs->nim)>
-                                    {{ $mhs->nim }} - {{ $mhs->nama }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Mata Kuliah</label>
-                        <select class="form-select" name="kode_mk">
-                            @foreach($mataKuliahList as $mk)
-                                <option value="{{ $mk->kode_mk }}" @selected(old('kode_mk', $editing->kode_mk ?? '') == $mk->kode_mk)>
-                                    {{ $mk->kode_mk }} - {{ $mk->nama_mk }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Status</label>
-                        @php($statusVal = old('status_kehadiran', $editing->status_kehadiran ?? 'hadir'))
-                        <select class="form-select" name="status_kehadiran">
-                            <option value="hadir" @selected($statusVal === 'hadir')>Hadir</option>
-                            <option value="izin" @selected($statusVal === 'izin')>Izin</option>
-                            <option value="sakit" @selected($statusVal === 'sakit')>Sakit</option>
-                            <option value="alpha" @selected($statusVal === 'alpha')>Alpha</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Jam Masuk</label>
-                        <input type="time" class="form-control" name="jam_masuk" value="{{ old('jam_masuk', $editing->jam_masuk ?? '') }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Jam Keluar</label>
-                        <input type="time" class="form-control" name="jam_keluar" value="{{ old('jam_keluar', $editing->jam_keluar ?? '') }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Pertemuan</label>
-                        <input type="number" class="form-control" name="pertemuan_ke" value="{{ old('pertemuan_ke', $editing->pertemuan_ke ?? 1) }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Metode</label>
-                        <input class="form-control" name="metode_presensi" value="{{ old('metode_presensi', $editing->metode_presensi ?? 'Manual') }}">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Keterangan</label>
-                        <input class="form-control" name="keterangan" value="{{ old('keterangan', $editing->keterangan ?? '') }}">
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <button class="btn btn-primary">{{ $editing ? 'Simpan Perubahan' : 'Tambah' }}</button>
-                    @if($editing)
-                        <a href="{{ route('presensi.index') }}" class="btn btn-secondary">Batal</a>
-                    @endif
-                </div>
-            </form>
-        </div>
-    </div>
-
     <div class="card">
         <div class="card-body">
-            <form class="row g-2 mb-3">
-                <div class="col-md-4"><input class="form-control" name="q" value="{{ request('q') }}" placeholder="Cari mahasiswa..."></div>
-                <div class="col-md-3"><input type="date" class="form-control" name="tanggal" value="{{ request('tanggal') }}"></div>
-                <div class="col-md-3">
-                    <select class="form-select" name="status">
-                        <option value="all">Semua Status</option>
-                        <option value="hadir" @selected(request('status') === 'hadir')>Hadir</option>
-                        <option value="izin" @selected(request('status') === 'izin')>Izin</option>
-                        <option value="sakit" @selected(request('status') === 'sakit')>Sakit</option>
-                        <option value="alpha" @selected(request('status') === 'alpha')>Alpha</option>
-                    </select>
-                </div>
-                <div class="col-md-2"><button class="btn btn-outline-secondary">Filter</button></div>
-            </form>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -115,7 +25,7 @@
                             <th>Mata Kuliah</th>
                             <th>Status</th>
                             <th>Jam</th>
-                            <th>Aksi</th>
+                            <th>Tanggal</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -123,16 +33,19 @@
                             <tr>
                                 <td>{{ $item->mahasiswa->nama ?? $item->nim }}</td>
                                 <td>{{ $item->mataKuliah->nama_mk ?? $item->kode_mk }}</td>
-                                <td>{{ ucfirst($item->status_kehadiran) }}</td>
-                                <td>{{ $item->jam_masuk ?? '-' }} - {{ $item->jam_keluar ?? '-' }}</td>
-                                <td class="d-flex gap-2">
-                                    <a class="btn btn-sm btn-outline-primary" href="{{ route('presensi.index', ['edit' => $item->id]) }}">Edit</a>
-                                    <form method="POST" action="{{ route('presensi.destroy', $item->id) }}" onsubmit="return confirm('Hapus data ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-sm btn-outline-danger">Hapus</button>
-                                    </form>
+                                <td>
+                                    @if($item->status_kehadiran === 'hadir')
+                                        <span class="badge bg-success">Hadir</span>
+                                    @elseif($item->status_kehadiran === 'sakit')
+                                        <span class="badge bg-info">Sakit</span>
+                                    @elseif($item->status_kehadiran === 'izin')
+                                        <span class="badge bg-warning">Izin</span>
+                                    @else
+                                        <span class="badge bg-danger">Alpha</span>
+                                    @endif
                                 </td>
+                                <td>{{ $item->jam_masuk ?? '-' }} - {{ $item->jam_keluar ?? '-' }}</td>
+                                <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -271,14 +184,14 @@
 @else
     <div class="card mb-3">
         <div class="card-body">
-            <h6 class="mb-2">Presensi Klik Hadir</h6>
-            <div class="text-muted">Klik tombol Hadir saat dosen membuka sesi presensi (durasi 5-15 menit).</div>
+            <h6 class="mb-2">Presensi Klik</h6>
+            <div class="text-muted">Pilih status kehadiran saat dosen membuka sesi presensi (durasi 5-15 menit).</div>
         </div>
     </div>
 
     <div class="card mb-3">
         <div class="card-body">
-            <h6 class="mb-3">Sesi Aktif</h6>
+            <h6 class="mb-3">Sesi Aktif - Pilih Status</h6>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -288,6 +201,7 @@
                             <th>Pertemuan</th>
                             <th>Semester</th>
                             <th>Berakhir</th>
+                            <th>Status Kehadiran</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -300,16 +214,28 @@
                                 <td>{{ $session->semester_kelas ?? '-' }}</td>
                                 <td>{{ \Illuminate\Support\Carbon::parse($session->expires_at)->format('H:i') }}</td>
                                 <td>
-                                    <form method="POST" action="{{ route('mahasiswa.presensi.hadir') }}">
+                                    <form method="POST" action="{{ route('mahasiswa.presensi.status') }}" class="d-flex gap-2">
                                         @csrf
                                         <input type="hidden" name="session_id" value="{{ $session->id }}">
-                                        <button class="btn btn-sm btn-success">Hadir</button>
+                                        <div class="btn-group" role="group">
+                                            <input type="radio" class="btn-check" name="status_kehadiran" id="hadir-{{ $session->id }}" value="hadir" autocomplete="off" checked>
+                                            <label class="btn btn-sm btn-outline-success" for="hadir-{{ $session->id }}">Hadir</label>
+                                            
+                                            <input type="radio" class="btn-check" name="status_kehadiran" id="sakit-{{ $session->id }}" value="sakit" autocomplete="off">
+                                            <label class="btn btn-sm btn-outline-info" for="sakit-{{ $session->id }}">Sakit</label>
+                                            
+                                            <input type="radio" class="btn-check" name="status_kehadiran" id="izin-{{ $session->id }}" value="izin" autocomplete="off">
+                                            <label class="btn btn-sm btn-outline-warning" for="izin-{{ $session->id }}">Izin</label>
+                                        </div>
+                                </td>
+                                <td>
+                                        <button type="submit" class="btn btn-sm btn-primary">Kirim</button>
                                     </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted">Belum ada sesi aktif.</td>
+                                <td colspan="7" class="text-center text-muted">Belum ada sesi aktif.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -320,6 +246,7 @@
 
     <div class="card">
         <div class="card-body">
+            <h6 class="mb-3">Riwayat Presensi</h6>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -333,9 +260,19 @@
                     <tbody>
                         @forelse($presensi as $item)
                             <tr>
-                                <td>{{ \Illuminate\Support\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
                                 <td>{{ $item->mataKuliah->nama_mk ?? $item->kode_mk }}</td>
-                                <td>{{ ucfirst($item->status_kehadiran) }}</td>
+                                <td>
+                                    @if($item->status_kehadiran === 'hadir')
+                                        <span class="badge bg-success">Hadir</span>
+                                    @elseif($item->status_kehadiran === 'sakit')
+                                        <span class="badge bg-info">Sakit</span>
+                                    @elseif($item->status_kehadiran === 'izin')
+                                        <span class="badge bg-warning">Izin</span>
+                                    @else
+                                        <span class="badge bg-danger">Alpha</span>
+                                    @endif
+                                </td>
                                 <td>{{ $item->jam_masuk ?? '-' }} - {{ $item->jam_keluar ?? '-' }}</td>
                             </tr>
                         @empty

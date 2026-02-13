@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Golongan extends Model
 {
@@ -33,5 +34,12 @@ class Golongan extends Model
     public function dosenWali()
     {
         return $this->belongsTo(Dosen::class, 'dosen_wali', 'nip');
+    }
+
+    public function getAngkatanValue(): ?string
+    {
+        $key = $this->getKey();
+        $record = static::find($key);
+        return $record ? $record->getAttributeValue('angkatan') : null;
     }
 }

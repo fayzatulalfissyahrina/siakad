@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Mahasiswa')
+@section('title', 'Ruang')
 
 @push('styles')
 <style>
@@ -17,14 +17,14 @@
 @endif
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">Data Mahasiswa</h4>
-    <a href="{{ route('mahasiswa.create') }}" class="btn btn-primary">Tambah Mahasiswa</a>
+    <h4 class="mb-0">Data Ruang</h4>
+    <a href="{{ route('ruang.create') }}" class="btn btn-primary">Tambah Ruang</a>
 </div>
 
 <div class="table-wrap p-3">
     <div class="row g-2 mb-3">
         <div class="col-md-6">
-            <input class="form-control" id="live-search" placeholder="Ketik NIM atau nama untuk mencari..." autocomplete="off">
+            <input class="form-control" id="live-search" placeholder="Ketik nama atau ID ruang untuk mencari..." autocomplete="off">
         </div>
     </div>
 
@@ -32,22 +32,23 @@
         <table class="table table-striped" id="data-table">
             <thead>
                 <tr>
-                    <th>NIM</th>
-                    <th>Nama</th>
-                    <th>Semester</th>
-                    <th>Golongan</th>
+                    <th>ID</th>
+                    <th>Nama Ruang</th>
+                    <th>Gedung</th>
+                    <th>Lantai</th>
+                    <th>Kapasitas</th>
                     <th>Status</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody id="table-body">
-                @include('partials.table-mahasiswa', ['mahasiswa' => $mahasiswa])
+                @include('partials.table-ruang', ['ruang' => $ruang])
             </tbody>
         </table>
     </div>
 
     <div id="pagination-wrapper">
-        {{ $mahasiswa->links() }}
+        {{ $ruang->links() }}
     </div>
 </div>
 
@@ -62,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadData(page = 1) {
         const q = searchInput.value;
         
-        fetch(`/api/filter/mahasiswa?q=${encodeURIComponent(q)}&page=${page}`)
+        fetch(`/api/filter/ruang?q=${encodeURIComponent(q)}&page=${page}`)
             .then(response => response.json())
             .then(data => {
                 tableBody.innerHTML = data.html;

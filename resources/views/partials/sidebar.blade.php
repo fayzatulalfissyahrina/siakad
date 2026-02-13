@@ -10,15 +10,12 @@
             @if(auth()->user()?->role === 'admin')
                 <li class="mb-2"><a href="{{ route('mahasiswa.index') }}"><i class="fa-solid fa-user-graduate me-2"></i>Mahasiswa</a></li>
                 <li class="mb-2"><a href="{{ route('dosen.index') }}"><i class="fa-solid fa-user-tie me-2"></i>Dosen</a></li>
-                <li class="mb-2"><a href="{{ route('golongan.index') }}"><i class="fa-solid fa-layer-group me-2"></i>Golongan</a></li>
                 <li class="mb-2"><a href="{{ route('mata-kuliah.index') }}"><i class="fa-solid fa-book me-2"></i>Mata Kuliah</a></li>
                 <li class="mb-2"><a href="{{ route('pengampu.index') }}"><i class="fa-solid fa-chalkboard-user me-2"></i>Pengampu</a></li>
                 <li class="mb-2"><a href="{{ route('ruang.index') }}"><i class="fa-solid fa-door-open me-2"></i>Ruang</a></li>
                 <li class="mb-2"><a href="{{ route('jadwal.index') }}"><i class="fa-solid fa-calendar-days me-2"></i>Jadwal</a></li>
-                <li class="mb-2"><a href="{{ route('krs.index') }}"><i class="fa-solid fa-clipboard-list me-2"></i>KRS</a></li>
-                <li class="mb-2"><a href="{{ route('presensi.index') }}"><i class="fa-solid fa-user-check me-2"></i>Presensi</a></li>
                 <li class="mb-2"><a href="{{ route('admin.nilai') }}"><i class="fa-solid fa-pen-to-square me-2"></i>Input Nilai</a></li>
-                <li class="mb-2"><a href="{{ route('laporan.index') }}"><i class="fa-solid fa-file-lines me-2"></i>Laporan</a></li>
+                <li class="mb-2"><a href="{{ route('laporan.index') }}"><i class="fa-solid fa-file-lines me-2"></i>Laporan Presensi</a></li>
             @elseif(auth()->user()?->role === 'dosen')
                 <li class="mb-2"><a href="{{ route('dosen.jadwal') }}"><i class="fa-solid fa-calendar-days me-2"></i>Jadwal Mengajar</a></li>
                 <li class="mb-2"><a href="{{ route('dosen.presensi') }}"><i class="fa-solid fa-user-check me-2"></i>Presensi Mahasiswa</a></li>
@@ -26,7 +23,6 @@
                 <li class="mb-2"><a href="{{ route('dosen.laporan') }}"><i class="fa-solid fa-file-lines me-2"></i>Laporan</a></li>
             @else
                 <li class="mb-2"><a href="{{ route('mahasiswa.jadwal') }}"><i class="fa-solid fa-calendar-days me-2"></i>Jadwal Kuliah</a></li>
-                <li class="mb-2"><a href="{{ route('mahasiswa.krs') }}"><i class="fa-solid fa-clipboard-list me-2"></i>KRS</a></li>
                 <li class="mb-2"><a href="{{ route('mahasiswa.presensi') }}"><i class="fa-solid fa-user-check me-2"></i>Presensi</a></li>
             @endif
         </ul>
