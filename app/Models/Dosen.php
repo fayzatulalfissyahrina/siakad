@@ -24,6 +24,11 @@ class Dosen extends Model
         'status',
     ];
 
+    public function getRouteKeyName()
+    {
+        return 'nip';
+    }
+
     public function pengampu()
     {
         return $this->hasMany(Pengampu::class, 'nip', 'nip');

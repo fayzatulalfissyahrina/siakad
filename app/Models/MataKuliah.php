@@ -24,6 +24,11 @@ class MataKuliah extends Model
         'silabus',
     ];
 
+    public function getRouteKeyName()
+    {
+        return 'kode_mk';
+    }
+
     public function pengampu()
     {
         return $this->hasMany(Pengampu::class, 'kode_mk', 'kode_mk');

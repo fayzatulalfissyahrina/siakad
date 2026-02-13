@@ -27,6 +27,11 @@ class Mahasiswa extends Model
         'tahun_masuk',
     ];
 
+    public function getRouteKeyName()
+    {
+        return 'nim';
+    }
+
     public function golongan()
     {
         return $this->belongsTo(Golongan::class, 'id_gol', 'id_gol');

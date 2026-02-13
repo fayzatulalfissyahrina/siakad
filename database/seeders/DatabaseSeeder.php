@@ -12,6 +12,12 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             DosenUserSeeder::class,
             MahasiswaUserSeeder::class,
+            RuangSeeder::class,
+            MataKuliahSeeder::class,
+            PengampuSeeder::class,
+            JadwalAkademikSeeder::class,
+            KrsSeeder::class,
+            PresensiAkademikSeeder::class,
         ]);
     }
 }
